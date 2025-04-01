@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Marketplace</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #fff8f0;
+            color: black;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background-color: white !important;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .navbar-brand {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+        .navbar-brand img {
+            width: 100px;
+            height: auto;
+            margin-right: 10px;
+        }
+        .nav-link {
+            color: black !important;
+        }
+        .nav-item {
+            margin-left: 15px;
+        }
+        .main-ui {
+            background-color: #fdf8f3;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background-color: white;
+            color: black;
+        }
+        .card-title {
+            font-weight: 600;
+        }
+        .btn-primary {
+            background-color: #333;
+            border: none;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #555;
+        }
+        .car-img {
+            border: 5px solid #ddd;
+            border-radius: 8px;
+            padding: 5px;
+            transition: transform 0.3s ease-in-out;
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .car-img:hover {
+            transform: scale(1.1);
+        }
+        /* Pop-up Animation */
+        .pop-up {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: popUp 0.6s ease-out forwards;
+        }
+
+        @keyframes popUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Modal styling */
+        .modal-content {
+            background-color: #fdf8f3;
+            color: #333;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand mx-auto" href="#">
+                <img src="logo.png" alt="Car Fun Logo" class="logo">
+                <span>Car Fun</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto" id="navLinks">
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container mt-4 main-ui pop-up">
+        <h3 class="text-center text-muted">Find Your Dream Car Today!</h3>
+        <h2 class="text-center">Buy & Sell Cars</h2>
+        <br>
+        <br>
+        <br>
+        <div class="row" id="carListings"></div>
+    </div>
+    
+    <div class="container mt-4 pop-up">
+        <h3 class="text-center">Proceed to Checkout</h3>
+        <div class="text-center">
+            <a href="checkout.html" class="btn btn-success mt-2">Proceed to Checkout</a>
+        </div>
+    </div>
+
+    <!-- Modal for Car Details -->
+    <div class="modal fade" id="carInfoModal" tabindex="-1" aria-labelledby="carInfoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="carInfoModalLabel">Car Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <img src="" id="modalCarImage" class="img-fluid mb-3" alt="Car Image">
+                    <h5 id="modalCarName"></h5>
+                    <p><strong>Price: </strong><span id="modalCarPrice"></span></p>
+                    <p><strong>Details: </strong><span id="modalCarDetails"></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            let cars = [
+                {id: "C001", name: "Hyundai Eon 2016", price: "₱380,000", img: "eon.png", details: "Compact city car with great fuel efficiency."},
+                {id: "C002", name: "Mazda 2 2018", price: "₱440,000", img: "m2.png", details: "Sleek and sporty design with a powerful engine."},
+                {id: "C003", name: "Toyota Innova 2022", price: "₱600,000", img: "inoba.png", details: "Spacious SUV, perfect for long trips."},
+                {id: "C004", name: "Honda Civic 2020", price: "₱750,000", img: "civic.jpg", details: "A stylish sedan with excellent performance."},
+                {id: "C005", name: "Ford Ranger 2021", price: "₱1,100,000", img: "ford.jpg", details: "A rugged pickup truck built for any terrain."},
+                {id: "C006", name: "Nissan Almera 2019", price: "₱500,000", img: "nissan.jpg", details: "Affordable and efficient sedan for daily use."},
+                {id: "C007", name: "Chevrolet Spark 2017", price: "₱350,000", img: "spark.jpg", details: "Compact and fuel-efficient hatchback."},
+                {id: "C008", name: "Mitsubishi Montero 2021", price: "₱1,300,000", img: "montero.jpg", details: "A powerful and reliable SUV."},
+                {id: "C009", name: "Suzuki Swift 2020", price: "₱680,000", img: "swift.jpg", details: "A fun and zippy hatchback."},
+                {id: "C010", name: "BMW X5 2019", price: "₱3,500,000", img: "x5.jpg", details: "Luxury and performance in one package."},
+                {id: "C011", name: "Toyota Fortuner 2023", price: "₱1,800,000", img: "fortuner.jpg", details: "A top choice for SUV enthusiasts."},
+                {id: "C012", name: "Mercedes-Benz C-Class 2022", price: "₱4,000,000", img: "cclass.jpg", details: "Premium sedan with cutting-edge features."}
+            ];
+
+            // Dynamically load cars into the page
+            cars.forEach(car => {
+                $('#carListings').append(`
+                    <div class="col-md-4">
+                        <div class="card mb-4 pop-up">
+                            <img src="${car.img}" class="card-img-top car-img" alt="Car">
+                            <div class="card-body">
+                                <h5 class="card-title">${car.name}</h5>
+                                <p class="card-text">Price: ${car.price}</p>
+                                <p class="card-text"><strong>ID: ${car.id}</strong></p>
+                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#carInfoModal" onclick="showCarInfo('${car.name}', '${car.price}', '${car.img}', '${car.details}')">Info</button>
+                            </div>
+                        </div>
+                    </div>
+                `);
+            });
+
+            // Show car info in the modal
+            window.showCarInfo = function(name, price, img, details) {
+                $('#modalCarName').text(name);
+                $('#modalCarPrice').text(price);
+                $('#modalCarDetails').text(details);
+                $('#modalCarImage').attr('src', img);
+            }
+        });
+    </script>
+</body>
+</html>
